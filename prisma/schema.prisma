@@ -1,0 +1,72 @@
+generator client {
+	provider = "prisma-client-js"
+}
+
+datasource db {
+	provider = "postgresql"
+	url = env("DATABASE_URL")
+}
+
+
+
+model User {
+	id  Int  @id @default(autoincrement())
+	email String @unique
+	name  String
+	userName String @unique  @map("user_name")
+	password String
+	profilePhoto String?  @map("profile_photo")
+	myByscet Int[]
+	dateRegestration DateTime @default(now())
+
+	product    	 Product[]
+	SystemSubscription SystemSubscription[]
+	Chat Chat[]
+	Message Message[]
+}
+
+
+model Product {
+	id      Int @id @default(autoincrement())
+	nameProduct 	String  @map("name_product")
+	price    			Int  
+	photoProduct 	String  @map("photo_product")
+	description   String
+
+
+	author        User   @relation(fields: [authorId], references: [id])
+	authorId Int  @map("author_id")
+
+}
+
+
+model SystemSubscription{
+	id Int @id @default(autoincrement())
+	subscriberId Int @map("sbscriber_id") @unique
+	cumirId Int @map("cunir_id")
+
+	subscriber User @relation(fields: [subscriberId], references: [id])
+
+	@@map("system_subscription")
+}
+
+
+model Chat {
+	id Int @id @default(autoincrement())
+	createAt User @relation(fields: [creatorId], references: [id])
+	creatorId Int @map("create_at_id")
+	participantId Int @map("participantId")
+
+	Message Message[]
+}
+
+model Message {
+	id Int @id @default(autoincrement())
+	chatId Int @map("chat_id")
+	createAt DateTime @default(now()) @map("create_at")
+	value String 
+	senderId Int @map("sender_id")
+
+	chat Chat @relation(fields: [chatId], references: [id])
+	sender User @relation(fields: [senderId], references: [id])
+}
