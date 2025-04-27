@@ -5,8 +5,8 @@ generator client {
 datasource db {
 	provider = "postgresql"
 	url = env("DATABASE_URL")
+	directUrl = env("DIRECT_URL")
 }
-
 
 
 model User {
@@ -18,11 +18,22 @@ model User {
 	profilePhoto String?  @map("profile_photo")
 	myByscet Int[]
 	dateRegestration DateTime @default(now())
+	isActivated  Boolean @default(false)
+	RefReshToken String? @map("ref_resh_token")
 
 	product    	 Product[]
 	SystemSubscription SystemSubscription[]
 	Chat Chat[]
 	Message Message[]
+}
+
+
+model ActivatedAcount {
+	id      Int     @default(autoincrement())
+	userEmail  String     @unique  @map("user_email")
+	keyForVerification     Int    @map("key_for_verification")
+ 
+	@@map("activated_acount")
 }
 
 
@@ -32,13 +43,15 @@ model Product {
 	price    			Int  
 	photoProduct 	String  @map("photo_product")
 	description   String
-
+	adress 				String 
+	coordinate    String
+	category  		String
+	sold 					Boolean @default(false)
 
 	author        User   @relation(fields: [authorId], references: [id])
 	authorId Int  @map("author_id")
 
 }
-
 
 model SystemSubscription{
 	id Int @id @default(autoincrement())
